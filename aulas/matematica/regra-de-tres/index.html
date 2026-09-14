@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="../../../src/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../../src/css/aula.css">
+  <title>Apostila Interativa: Regra de Três | Prof. Rafael Guimarães</title>
+  <style>
+
+    /* --- INÍCIO: NOVOS ESTILOS QUADRO DE GIZ --- */
+    .quadro-giz {
+      background: #1e3f20; /* Verde escuro escolar */
+      border: 8px solid #8b5a2b; /* Borda de madeira */
+      border-radius: 4px;
+      padding: 24px;
+      color: #e5e7eb; /* Cor do giz branco */
+      font-family: 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
+      box-shadow: inset 0 0 12px rgba(0,0,0,0.6), 4px 4px 8px rgba(0,0,0,0.2);
+      min-height: 180px;
+    }
+    
+    /* Cores do giz no quadro */
+    .quadro-giz table th { color: #facc15 !important; border-bottom: 2px dashed #e5e7eb; } 
+    .quadro-giz .giz-vermelho { color: #f87171; }
+    .quadro-giz .giz-verde { color: #4ade80; }
+    .quadro-giz .giz-amarelo { color: #facc15; }
+
+    /* Animação simulando a escrita */
+    .escrevendo {
+      opacity: 0;
+      animation: aparecer 0.2s forwards;
+    }
+    @keyframes aparecer { to { opacity: 1; } }
+    
+    .delay-1 { animation-delay: 0.5s; }
+    .delay-2 { animation-delay: 1.5s; }
+    .delay-3 { animation-delay: 2.5s; }
+    .delay-4 { animation-delay: 3.5s; }
+    /* --- FIM: NOVOS ESTILOS QUADRO DE GIZ --- */
+
+
+
+    /* Reaproveitando suas variáveis e estilos base */
+    .input-number-custom, .input-text-custom {
+      background: var(--surface-2); border: 1px solid var(--line); color: var(--ink);
+      font-family: var(--font-mono); font-size: 1rem; padding: 8px 12px;
+      border-radius: var(--radius-sm); width: 100%; box-sizing: border-box; margin-bottom: 8px;
+    }
+    .input-number-custom:focus, .input-text-custom:focus { outline: 2px solid var(--brand); border-color: transparent; }
+    
+    .apostila-section { background: var(--surface-1); padding: 32px; border-radius: var(--radius-md); border: 1px solid var(--line); margin-bottom: 32px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+    .apostila-section h2 { color: var(--brand-strong); border-bottom: 2px solid var(--surface-2); padding-bottom: 8px; }
+    .apostila-section h3 { color: var(--ink-dark); margin-top: 24px; }
+    
+    .math-block { background: var(--surface-2); padding: 16px; border-radius: var(--radius-sm); text-align: center; font-family: var(--font-mono); font-size: 1.2rem; margin: 16px 0; border-left: 4px solid var(--brand); color: var(--ink-dark); }
+    
+    .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; background: var(--surface-2); padding: 24px; border-radius: var(--radius-md); }
+    @media(max-width: 768px) { .dashboard { grid-template-columns: 1fr; } }
+    
+    .control-group { background: var(--surface-1); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--line); }
+    .control-group label { font-weight: bold; color: var(--ink-dark); font-size: 0.9rem; display: block; margin-bottom: 8px; }
+    
+    .btn-simulado { background: var(--brand); color: white; border: none; padding: 12px 24px; border-radius: var(--radius-sm); font-size: 1rem; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+    .btn-simulado:hover { background: var(--brand-strong); }
+    
+    .btn-action { width: 100%; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-increase { background: #10b981; } .btn-increase:hover { background: #059669; }
+    .btn-decrease { background: #ef4444; } .btn-decrease:hover { background: #dc2626; }
+
+    .logic-box { background: #e0f2fe; border: 1px solid #7dd3fc; padding: 16px; border-radius: var(--radius-sm); margin-top: 16px; text-align: center; }
+    .logic-box p { margin: 0 0 12px 0; color: #0369a1; font-weight: 500; }
+
+    /* Quiz */
+    .question { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+    .options { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+    .option-label { display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm); cursor: pointer; transition: 0.2s; }
+    .option-label:hover { background: #e2e8f0; }
+    .option-label input { width: 18px; height: 18px; cursor: pointer; }
+    .feedback { margin-top: 12px; padding: 12px; border-radius: var(--radius-sm); display: none; font-weight: 500; }
+    .feedback.correct { display: block; background: #d1fae5; color: #065f46; border: 1px solid #10b981; }
+    .feedback.incorrect { display: block; background: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
+  </style>
+</head>
+<body>
+
+  <site-header></site-header>
+
+  <main class="section" style="padding-top: 110px;">
+    <div class="container">
+      <br>
+      <span class="eyebrow" style="color: var(--brand); font-weight: bold; text-transform: uppercase; font-size: 0.85rem;">Ensino Fundamental</span>
+
+      <h1 class="section-title" style="color: var(--ink-dark); margin-top: 8px;">Regra de Três: A Lógica das Proporções</h1>
+      <p>A Regra de Três é a ferramenta mais poderosa para resolver problemas do dia a dia. Ela nos ajuda a descobrir um valor desconhecido quando sabemos de outros três. Mas antes de calcular, precisamos entender o segredo das <strong>Grandezas</strong>.</p>
+
+      <section class="apostila-section">
+        <h2>1. Simples ou Composta?</h2>
+        <ul>
+          <li><strong>Regra de Três Simples:</strong> Envolve apenas <strong>duas</strong> grandezas (ex: Velocidade e Tempo).</li>
+          <li><strong>Regra de Três Composta:</strong> Envolve <strong>três ou mais</strong> grandezas (ex: Pedreiros, Dias e Metros de muro).</li>
+        </ul>
+        
+        <h2>2. O Segredo das Setinhas (Proporcionalidade)</h2>
+        <p>Aqui está o maior erro dos alunos: sair multiplicando cruzado sem pensar! Antes de qualquer conta, faça a pergunta de ouro:</p>
+        <ul>
+          <li><strong>Diretamente Proporcionais:</strong> Se uma aumenta, a outra <strong>aumenta</strong>. (Ex: Mais horas de trabalho = Mais dinheiro ganho). Multiplicamos cruzado (X).</li>
+          <li><strong>Inversamente Proporcionais:</strong> Se uma aumenta, a outra <strong>diminui</strong>. (Ex: Mais velocidade = Menos tempo de viagem). Multiplicamos em linha reta (=).</li>
+        </ul>
+      </section>
+
+      <!-- LABORATÓRIO INTERATIVO -->
+      <section class="apostila-section">
+        <h2>Laboratório Intuitivo: Descubra o 'X'</h2>
+        <p>Preencha os nomes das grandezas e os valores do seu problema. O sistema vai te ajudar a pensar na lógica antes de dar a resposta!</p>
+
+        <div class="dashboard">
+          <!-- Coluna 1: Entradas -->
+          <div>
+            <div class="control-group">
+              <label>1ª Grandeza (Ex: Pedreiros, Velocidade)</label>
+              <input type="text" id="nomeG1" class="input-text-custom" placeholder="Nome da Grandeza 1" oninput="atualizarPergunta()">
+              <div style="display: flex; gap: 8px;">
+                <input type="number" id="valA1" class="input-number-custom" placeholder="Valor 1 (ex: 2)">
+                <input type="number" id="valA2" class="input-number-custom" placeholder="Valor 2 (ex: 4)">
+              </div>
+            </div>
+
+            <div class="control-group" style="margin-top: 16px;">
+              <label>2ª Grandeza (A que tem o 'X')</label>
+              <input type="text" id="nomeG2" class="input-text-custom" placeholder="Nome da Grandeza 2" oninput="atualizarPergunta()">
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <input type="number" id="valB1" class="input-number-custom" placeholder="Valor 1 (ex: 10)">
+                <span style="font-weight: bold; color: var(--ink-dark); font-size: 1.2rem; padding: 0 16px;">X</span>
+              </div>
+            </div>
+
+            <!-- INÍCIO: BOTÃO PARA ADICIONAR GRANDEZA EXTRA -->
+            <div style="margin-top: 16px; text-align: center;">
+              <button type="button" id="btnToggleComposta" class="btn" style="background: var(--surface-2); color: var(--ink-dark); border: 1px dashed var(--line); width: 100%; font-size: 0.9rem;" onclick="toggleComposta()">
+                ➕ Adicionar 3ª Grandeza (Regra de Três Composta)
+              </button>
+            </div>
+            
+            <!-- INÍCIO: BLOCO DA 3ª GRANDEZA (Oculto por padrão) -->
+            <div id="blocoG3" class="control-group" style="margin-top: 16px; display: none;">
+              <label>3ª Grandeza</label>
+              <input type="text" id="nomeG3" class="input-text-custom" placeholder="Nome da Grandeza 3" oninput="atualizarPergunta()">
+              <div style="display: flex; gap: 8px;">
+                <input type="number" id="valC1" class="input-number-custom" placeholder="Valor 1 (ex: 8)">
+                <input type="number" id="valC2" class="input-number-custom" placeholder="Valor 2 (ex: 12)">
+              </div>
+              <div style="margin-top: 8px;">
+                <label style="font-size: 0.8rem; color: var(--ink-light);">Relação desta grandeza com o 'X':</label>
+                <select id="relacaoG3" class="input-text-custom" style="padding: 4px; font-size: 0.9rem;">
+                  <option value="direta">⬆️ ⬆️ Diretamente Proporcional</option>
+                  <option value="inversa">⬆️ ⬇️ Inversamente Proporcional</option>
+                </select>
+              </div>
+            </div>
+            <!-- FIM: BLOCO DA 3ª GRANDEZA -->
+
+          </div>
+          
+          <!-- Coluna 2: Lógica e Resultado -->
+          <div style="display: flex; flex-direction: column; justify-content: flex-start;">
+            <div class="logic-box">
+              <p id="txtPergunta">Preencha os nomes das grandezas ao lado para começar a pensar!</p>
+              <div style="display: flex; gap: 12px; margin-top: 16px;" id="boxBotoes" style="display: none;">
+                <button class="btn btn-action btn-increase" onclick="calcular('direta')">⬆️ Vai AUMENTAR</button>
+                <button class="btn btn-action btn-decrease" onclick="calcular('inversa')">⬇️ Vai DIMINUIR</button>
+              </div>
+            </div>
+
+            <div class="math-block" id="formulaVis" style="font-size: 1rem; text-align: left; min-height: 120px;">
+              <em>Aguardando sua decisão lógica acima...</em>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- QUIZ BÁSICO -->
+      <section class="apostila-section">
+        <h2>Simulado Rápido</h2>
+        <p>Aplique o que aprendeu. Leia com atenção e decida se é direta ou inversa antes de calcular!</p>
+
+        <div id="quiz-container">
+          <div class="question" data-answer="B">
+            <p><strong>1.</strong> Se 4 pedreiros constroem um muro em 12 dias, quantos dias levarão 6 pedreiros trabalhando no mesmo ritmo?</p>
+            <div class="options">
+              <label class="option-label"><input type="radio" name="q1" value="A"> A) 18 dias</label>
+              <label class="option-label"><input type="radio" name="q1" value="B"> B) 8 dias</label>
+              <label class="option-label"><input type="radio" name="q1" value="C"> C) 10 dias</label>
+            </div>
+            <div class="feedback"><strong>Inversamente Proporcional!</strong> Mais pedreiros = Menos dias. Multiplica reto: 4 * 12 = 6 * X ➔ 48 = 6X ➔ X = 8 dias.</div>
+          </div>
+
+          <div class="question" data-answer="A">
+            <p><strong>2.</strong> Com 50 kg de trigo, fazemos 40 kg de farinha. Quantos kg de trigo são necessários para fazer 120 kg de farinha?</p>
+            <div class="options">
+              <label class="option-label"><input type="radio" name="q2" value="A"> A) 150 kg</label>
+              <label class="option-label"><input type="radio" name="q2" value="B"> B) 96 kg</label>
+              <label class="option-label"><input type="radio" name="q2" value="C"> C) 120 kg</label>
+            </div>
+            <div class="feedback"><strong>Diretamente Proporcional!</strong> Mais farinha = Mais trigo necessário. Multiplica cruzado: 50 * 120 = 40 * X ➔ 6000 = 40X ➔ X = 150 kg.</div>
+          </div>
+        </div>
+        
+        <button class="btn-simulado" onclick="corrigirQuiz()">Corrigir Simulado</button>
+      </section>
+    </div>
+  </main>
+
+  <site-footer></site-footer>
+  
+  <script src="/src/js/components.js"></script>
+  <script src="../../../src/js/aula-base.js"></script>
+
+  <script>
+    // --- LABORATÓRIO INTUITIVO ---
+    const nomeG1 = document.getElementById('nomeG1');
+    const nomeG2 = document.getElementById('nomeG2');
+    const nomeG3 = document.getElementById('nomeG3');
+    const valC1 = document.getElementById('valC1');
+    const valC2 = document.getElementById('valC2');
+    const relacaoG3 = document.getElementById('relacaoG3');
+    const txtPergunta = document.getElementById('txtPergunta');
+    const formulaVis = document.getElementById('formulaVis');
+    const valA1 = document.getElementById('valA1');
+    const valA2 = document.getElementById('valA2');
+    const valB1 = document.getElementById('valB1');
+
+    function atualizarPergunta() {
+      let g1 = nomeG1.value.trim() || "[Grandeza 1]";
+      let g2 = nomeG2.value.trim() || "[Grandeza 2]";
+      
+      if(g1 !== "[Grandeza 1]" || g2 !== "[Grandeza 2]") {
+        txtPergunta.innerHTML = `Pense bem: Se você AUMENTAR a quantidade de <strong>${g1}</strong>, o que acontecerá com <strong>${g2}</strong>?`;
+      } else {
+        txtPergunta.innerHTML = `Preencha os nomes das grandezas ao lado para começar a pensar!`;
+      }
+      
+      // Reseta o quadro de cálculo ao alterar as grandezas
+      formulaVis.innerHTML = `<em>Aguardando sua decisão lógica acima...</em>`;
+    }
+
+    // function calcular(tipo) {
+    //   let a1 = parseFloat(valA1.value);
+    //   let a2 = parseFloat(valA2.value);
+    //   let b1 = parseFloat(valB1.value);
+    //   let g1 = nomeG1.value.trim() || "G1";
+    //   let g2 = nomeG2.value.trim() || "G2";
+
+    //   if (isNaN(a1) || isNaN(a2) || isNaN(b1)) {
+    //     formulaVis.innerHTML = `<span style='color: #ef4444;'>Por favor, preencha todos os 3 valores numéricos para calcular o X.</span>`;
+    //     return;
+    //   }
+
+    //   if (tipo === 'direta') {
+    //     let resultado = (a2 * b1) / a1;
+    //     formulaVis.innerHTML = `
+    //       <strong>✔ DIRETAMENTE PROPORCIONAIS</strong><br>
+    //       <small>(Setas na mesma direção ⬆️ ⬆️). Multiplicamos em CRUZ (X):</small><br><br>
+    //       ${a1} ${g1} — ${b1} ${g2}<br>
+    //       ${a2} ${g1} — <strong>X</strong><br><br>
+    //       ${a1} · X = ${a2} · ${b1}<br>
+    //       X = ${a2 * b1} / ${a1}<br>
+    //       <strong style="color: var(--brand-strong); font-size:1.4rem;">X = ${resultado.toFixed(2).replace('.00', '')}</strong>
+    //     `;
+    //   } else {
+    //     let resultado = (a1 * b1) / a2;
+    //     formulaVis.innerHTML = `
+    //       <strong>✔ INVERSAMENTE PROPORCIONAIS</strong><br>
+    //       <small>(Setas invertidas ⬆️ ⬇️). Multiplicamos RETO (=):</small><br><br>
+    //       ${a1} ${g1} — ${b1} ${g2}<br>
+    //       ${a2} ${g1} — <strong>X</strong><br><br>
+    //       ${a2} · X = ${a1} · ${b1}<br>
+    //       X = ${a1 * b1} / ${a2}<br>
+    //       <strong style="color: #ef4444; font-size:1.4rem;">X = ${resultado.toFixed(2).replace('.00', '')}</strong>
+    //     `;
+    //   }
+    // }
+
+    // function calcular(tipo) {
+    //   let a1 = parseFloat(valA1.value);
+    //   let a2 = parseFloat(valA2.value);
+    //   let b1 = parseFloat(valB1.value);
+    //   let g1 = nomeG1.value.trim() || "G1";
+    //   let g2 = nomeG2.value.trim() || "G2";
+
+    //   if (isNaN(a1) || isNaN(a2) || isNaN(b1)) {
+    //     formulaVis.innerHTML = `<span style='color: #ef4444;'>Por favor, preencha todos os 3 valores numéricos para calcular o X.</span>`;
+    //     return;
+    //   }
+
+    //   if (tipo === 'direta') {
+    //     let resultado = (a2 * b1) / a1;
+    //     formulaVis.innerHTML = `
+    //       <strong>✔ DIRETAMENTE PROPORCIONAIS</strong><br>
+    //       <small>(Setas na mesma direção ⬆️ ⬆️). Multiplicamos em CRUZ (X):</small><br><br>
+          
+    //       <table style="width: 100%; text-align: center; margin-bottom: 16px; border-collapse: collapse;">
+    //         <tr style="border-bottom: 1px solid var(--line);">
+    //           <th style="padding: 8px 0; color: var(--brand);">${g1}</th>
+    //           <th style="padding: 8px 0; color: var(--brand);">${g2}</th>
+    //         </tr>
+    //         <tr>
+    //           <td style="padding: 4px 0;">${a1}</td>
+    //           <td style="padding: 4px 0;">${b1}</td>
+    //         </tr>
+    //         <tr>
+    //           <td style="padding: 4px 0;">${a2}</td>
+    //           <td style="padding: 4px 0;"><strong>X</strong></td>
+    //         </tr>
+    //       </table>
+
+    //       ${a1} · X = ${a2} · ${b1}<br>
+    //       X = ${a2 * b1} / ${a1}<br>
+    //       <strong style="color: var(--brand-strong); font-size:1.4rem;">X = ${resultado.toFixed(2).replace('.00', '')}</strong>
+    //     `;
+    //   } else {
+    //     let resultado = (a1 * b1) / a2;
+    //     formulaVis.innerHTML = `
+    //       <strong>✔ INVERSAMENTE PROPORCIONAIS</strong><br>
+    //       <small>(Setas invertidas ⬆️ ⬇️). Multiplicamos RETO (=):</small><br><br>
+          
+    //       <table style="width: 100%; text-align: center; margin-bottom: 16px; border-collapse: collapse;">
+    //         <tr style="border-bottom: 1px solid var(--line);">
+    //           <th style="padding: 8px 0; color: #ef4444;">${g1}</th>
+    //           <th style="padding: 8px 0; color: #ef4444;">${g2}</th>
+    //         </tr>
+    //         <tr>
+    //           <td style="padding: 4px 0;">${a1}</td>
+    //           <td style="padding: 4px 0;">${b1}</td>
+    //         </tr>
+    //         <tr>
+    //           <td style="padding: 4px 0;">${a2}</td>
+    //           <td style="padding: 4px 0;"><strong>X</strong></td>
+    //         </tr>
+    //       </table>
+
+    //       ${a2} · X = ${a1} · ${b1}<br>
+    //       X = ${a1 * b1} / ${a2}<br>
+    //       <strong style="color: #ef4444; font-size:1.4rem;">X = ${resultado.toFixed(2).replace('.00', '')}</strong>
+    //     `;
+    //   }
+    // }
+    function calcular(tipo) {
+      // Coleta G1
+      let a1 = parseFloat(valA1.value);
+      let a2 = parseFloat(valA2.value);
+      let g1 = nomeG1.value.trim() || "G1";
+      
+      // Coleta G2 (A do X)
+      let b1 = parseFloat(valB1.value);
+      let g2 = nomeG2.value.trim() || "G2";
+
+      // Coleta G3
+      let c1 = parseFloat(valC1.value);
+      let c2 = parseFloat(valC2.value);
+      let g3 = nomeG3.value.trim() || "";
+      let relG3 = relacaoG3.value;
+
+      if (isNaN(a1) || isNaN(a2) || isNaN(b1)) {
+        formulaVis.innerHTML = `<span style='color: #ef4444;'>Preencha pelo menos a 1ª e 2ª grandeza completas.</span>`;
+        return;
+      }
+
+      // Verifica se é Simples ou Composta
+      let isComposta = !isNaN(c1) && !isNaN(c2) && g3 !== "";
+
+      // Inversão prévia dos valores se a relação for INVERSA
+      // Se G1 for inversa em relação ao X
+      let f_a1 = (tipo === 'inversa') ? a2 : a1;
+      let f_a2 = (tipo === 'inversa') ? a1 : a2;
+      let setaG1 = (tipo === 'inversa') ? "⬇️" : "⬆️";
+
+      // Se G3 existir e for inversa em relação ao X
+      let f_c1 = c1;
+      let f_c2 = c2;
+      let setaG3 = "⬆️";
+      if (isComposta) {
+        if (relG3 === 'inversa') {
+          f_c1 = c2;
+          f_c2 = c1;
+          setaG3 = "⬇️";
+        }
+      }
+
+      // --- FUNÇÃO PARA MOSTRAR/OCULTAR REGRA DE TRÊS COMPOSTA ---
+    function toggleComposta() {
+      const bloco = document.getElementById('blocoG3');
+      const btn = document.getElementById('btnToggleComposta');
+      
+      // Se estiver oculto, mostra
+      if (bloco.style.display === 'none') {
+        bloco.style.display = 'block';
+        btn.innerHTML = '➖ Remover 3ª Grandeza (Voltar para Simples)';
+      } else {
+        // Se estiver visível, oculta e limpa os dados
+        bloco.style.display = 'none';
+        btn.innerHTML = '➕ Adicionar 3ª Grandeza (Regra de Três Composta)';
+        
+        // Limpar os campos garante que o JavaScript calcule como Regra Simples novamente
+        document.getElementById('nomeG3').value = '';
+        document.getElementById('valC1').value = '';
+        document.getElementById('valC2').value = '';
+        
+        // Reseta o quadro de avisos
+        atualizarPergunta();
+      }
+    }
+
+      // Cálculo Matemático
+      let resultadoX;
+      if (isComposta) {
+        // Multiplica as frações das outras grandezas igualando à fração do X
+        // b1 / X = (f_a1 / f_a2) * (f_c1 / f_c2)
+        resultadoX = (b1 * f_a2 * f_c2) / (f_a1 * f_c1);
+      } else {
+        // Regra simples
+        resultadoX = (b1 * f_a2) / f_a1;
+      }
+
+      // Construção do Visual no Quadro de Giz
+      let htmlQuadro = `<div class="quadro-giz">`;
+
+      // Linha 1: Tabela (Aparece imediatamente)
+      htmlQuadro += `
+        <div class="escrevendo delay-1">
+          <table style="width: 100%; text-align: center; margin-bottom: 24px; border-collapse: collapse;">
+            <tr>
+              <th>${g1} <br><span style="font-size: 0.8rem">${setaG1}</span></th>
+              ${isComposta ? `<th>${g3} <br><span style="font-size: 0.8rem">${setaG3}</span></th>` : ''}
+              <th>${g2} (X) <br><span style="font-size: 0.8rem">⬆️</span></th>
+            </tr>
+            <tr style="font-size: 1.2rem;">
+              <td style="padding-top: 12px;">${a1}</td>
+              ${isComposta ? `<td style="padding-top: 12px;">${c1}</td>` : ''}
+              <td style="padding-top: 12px;">${b1}</td>
+            </tr>
+            <tr style="font-size: 1.2rem;">
+              <td>${a2}</td>
+              ${isComposta ? `<td>${c2}</td>` : ''}
+              <td class="giz-amarelo">X</td>
+            </tr>
+          </table>
+        </div>
+      `;
+
+      // Linha 2: Montagem da Equação (Delay 2)
+      htmlQuadro += `<div class="escrevendo delay-2" style="font-size: 1.2rem; margin-bottom: 12px;">`;
+      if (isComposta) {
+        htmlQuadro += `Equação: &nbsp; ${b1} / X = (${f_a1}/${f_a2}) · (${f_c1}/${f_c2})<br>`;
+        htmlQuadro += `=> ${b1} / X = ${f_a1 * f_c1} / ${f_a2 * f_c2}`;
+      } else {
+        if(tipo === 'inversa') htmlQuadro += `<small class="giz-vermelho">*Invertemos a 1ª grandeza</small><br>`;
+        htmlQuadro += `Equação: &nbsp; ${b1} / X = ${f_a1} / ${f_a2}`;
+      }
+      htmlQuadro += `</div>`;
+
+      // Linha 3: Multiplicação Cruzada (Delay 3)
+      htmlQuadro += `
+        <div class="escrevendo delay-3" style="font-size: 1.2rem; margin-bottom: 12px;">
+          ${isComposta ? (f_a1 * f_c1) : f_a1} · X = ${isComposta ? (f_a2 * f_c2) : f_a2} · ${b1} <br>
+          X = ${isComposta ? (f_a2 * f_c2 * b1) : (f_a2 * b1)} / ${isComposta ? (f_a1 * f_c1) : f_a1}
+        </div>
+      `;
+
+      // Linha 4: Resultado Final (Delay 4)
+      htmlQuadro += `
+        <div class="escrevendo delay-4" style="font-size: 1.6rem; font-weight: bold; text-align: center; margin-top: 16px;">
+          <span class="giz-verde">X = ${resultadoX.toFixed(2).replace('.00', '')}</span>
+        </div>
+      `;
+
+      htmlQuadro += `</div>`;
+
+      // Limpa o fundo antigo do math-block e injeta o quadro
+      formulaVis.style.background = 'transparent';
+      formulaVis.style.border = 'none';
+      formulaVis.style.padding = '0';
+      formulaVis.innerHTML = htmlQuadro;
+    }
+
+    // --- CORREÇÃO DO QUIZ ---
+    function corrigirQuiz() {
+      const questions = document.querySelectorAll('.question');
+      
+      questions.forEach((q, index) => {
+        const correta = q.getAttribute('data-answer');
+        const selecionada = q.querySelector('input[type="radio"]:checked');
+        const feedback = q.querySelector('.feedback');
+        
+        if (!selecionada) {
+          alert(`Por favor, responda a questão ${index + 1}`);
+          return;
+        }
+
+        if (selecionada.value === correta) {
+          feedback.className = 'feedback correct';
+          feedback.innerHTML = '<strong>Correto!</strong> ' + feedback.innerText.replace('Correto! ', '').replace('Incorreto. ', '');
+        } else {
+          feedback.className = 'feedback incorrect';
+          feedback.innerHTML = '<strong>Incorreto.</strong> ' + feedback.innerText.replace('Correto! ', '').replace('Incorreto. ', '');
+        }
+      });
+    }
+  </script>
+</body>
+</html>
