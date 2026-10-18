@@ -1,0 +1,93 @@
+/* 
+  Herda as variáveis do style.css e aulas.css
+  Focado apenas na mecânica do Quiz
+*/
+
+.question-image { 
+  max-width: 100%; 
+  max-height: 250px; 
+  border-radius: var(--radius-sm); 
+  margin-top: 24px; 
+  display: none; 
+}
+
+/* Grid das Alternativas */
+.options-grid { 
+  display: grid; 
+  grid-template-columns: 1fr 1fr; 
+  gap: 16px; 
+}
+@media(max-width: 768px) { 
+  .options-grid { grid-template-columns: 1fr; } 
+}
+
+/* Estilo Base das Alternativas */
+.option-btn {
+  background: var(--surface-2);
+  color: var(--ink);
+  border: 2px solid var(--line);
+  padding: 20px;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  box-shadow: 0 4px 0 var(--line);
+}
+
+.option-btn:hover { 
+  transform: translateY(-2px); 
+  border-color: var(--brand);
+}
+
+.option-btn:active { 
+  transform: translateY(4px); 
+  box-shadow: 0 0 0 transparent; 
+}
+
+/* =========================================
+   ANIMAÇÕES E ESTADOS (SHOW DO MILHÃO)
+   ========================================= */
+
+/* Suspense (Piscando em amarelo antes de revelar) */
+.option-btn.selected { 
+  background: #fef08a !important; 
+  border-color: #eab308 !important; 
+  color: #854d0e !important;
+  box-shadow: 0 4px 0 #eab308 !important; 
+  animation: piscarSuspense 0.5s infinite alternate;
+}
+
+@keyframes piscarSuspense {
+  from { opacity: 1; }
+  to { opacity: 0.7; }
+}
+
+/* Resposta Correta (Verde) */
+.option-btn.correct { 
+  background: #10b981 !important; 
+  color: white !important; 
+  border-color: #059669 !important; 
+  box-shadow: 0 4px 0 #059669 !important; 
+  animation: none; /* Para o piscar */
+}
+
+/* Resposta Incorreta (Vermelho) */
+.option-btn.wrong { 
+  background: #ef4444 !important; 
+  color: white !important; 
+  border-color: #b91c1c !important; 
+  box-shadow: 0 4px 0 #b91c1c !important; 
+  animation: none;
+}
+
+/* Efeito da Tesoura (Cortando a alternativa) */
+.option-btn.eliminated { 
+  opacity: 0; 
+  pointer-events: none; 
+  transform: scale(0.8); 
+}
+
+.hidden { display: none !important; }

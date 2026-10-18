@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Show do Milhão da Matemática | Prof. Rafael Guimarães</title>
+  <link rel="icon" href="../../../src/img/favicon.svg" type="image/svg+xml">
+  
+  <!-- Importando o seu CSS global (Ajuste os caminhos "../../" conforme sua pasta) -->
+  <link rel="stylesheet" href="../../../src/css/style.css">
+  <link rel="stylesheet" href="../../../src/css/aulas.css">
+  
+  <!-- CSS específico apenas para os botões e animações do Quiz -->
+  <!-- <link rel="stylesheet" href="quiz-style.css"> -->
+  <link rel="stylesheet" href="../quiz-show/quiz-style.css">
+
+</head>
+<body>
+
+  <!-- Seu cabeçalho oficial -->
+  <site-header></site-header>
+
+  <main class="container" style="padding-top: 100px; padding-bottom: 60px;">
+    
+    <!-- TELA 1: O JOGO -->
+    <div id="game-screen" class="module-card">
+      
+      <!-- Cabeçalho do Jogo -->
+      <div style="display: flex; justify-content: space-between; margin-bottom: 16px; color: var(--ink);">
+        <span class="badge" id="question-counter" style="background: var(--brand); color: white;">Pergunta 1 de 5</span>
+        <span style="font-family: var(--font-mono); font-size: 0.85rem;">Modo Infantil: <strong style="color: var(--brand);">ATIVADO</strong></span>
+      </div>
+
+      <!-- Caixa da Pergunta (Usando estilo de quadro do seu aulas.css) -->
+      <div class="canvas-card" style="min-height: auto; padding: 32px; margin-bottom: 24px;">
+        <h2 id="question-text" style="color: var(--ink); text-align: center; margin: 0;">Preparando a pergunta...</h2>
+        <img id="question-image" src="" class="question-image" alt="Imagem da questão">
+      </div>
+
+      <!-- Alternativas -->
+      <div class="options-grid" id="options-container">
+        <button class="option-btn" onclick="selectOption(0)">A) ...</button>
+        <button class="option-btn" onclick="selectOption(1)">B) ...</button>
+        <button class="option-btn" onclick="selectOption(2)">C) ...</button>
+        <button class="option-btn" onclick="selectOption(3)">D) ...</button>
+      </div>
+
+      <!-- Controles (Tesoura e Avançar) -->
+      <div class="control-panel" style="margin-top: 32px; flex-direction: row; justify-content: center; gap: 16px; border: none; box-shadow: none;">
+        <button class="btn" id="btn-tesoura" style="background: #f59e0b; color: white; border: none; font-weight: bold;" onclick="usarTesoura()">
+          ✂️ Cortar 2 Erradas
+        </button>
+        <button class="btn hidden" id="btn-avancar" style="background: var(--brand-strong); color: white; border: none; font-weight: bold;" onclick="acaoAvancar()">
+          Revelar Resposta
+        </button>
+      </div>
+    </div>
+
+    <!-- TELA 2: RESULTADOS -->
+    <div id="result-screen" class="module-card hidden" style="text-align: center;">
+      <h1 id="result-title" style="color: var(--brand-strong);">Parabéns! 🎉</h1>
+      <p id="result-message" style="color: var(--ink); font-size: 1.2rem;">Você é um gênio da matemática!</p>
+      
+      <!-- Modo Desempenho -->
+      <div id="score-display" class="math-readout hidden" style="margin-top: 24px; font-size: 2rem;">
+        Acertos: <span id="score-count">0</span>/5
+      </div>
+
+      <button class="btn" style="margin-top: 32px;" onclick="location.reload()">Jogar Novamente</button>
+    </div>
+
+  </main>
+
+  <!-- Seu rodapé oficial -->
+  <site-footer></site-footer>
+
+  <!-- SEUS SCRIPTS -->
+  <!-- Ajuste o caminho do components.js conforme a localização da pasta do quiz -->
+  
+  <script src="../../../src/js/components.js"></script> 
+  <script src="../../../src/js/aula-base.js"></script> 
+
+  <script src="quiz-engine.js"></script>
+</body>
+</html>
